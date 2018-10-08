@@ -50,6 +50,7 @@ object Libs {
         const val threeTenBp = "1.4.0"
         const val tracedroid = "1.4"
         const val truth = "1.0"
+        const val workManager = "1.0.0-alpha09"
     }
 
     const val assertjAndroid = "com.squareup.assertj:assertj-android:${Versions.assertjAndroid}"
@@ -75,4 +76,5 @@ object Libs {
     const val threeTenBp = "org.threeten:threetenbp:${Versions.threeTenBp}"
     const val tracedroid = "org.ligi:tracedroid:${Versions.tracedroid}"
     const val truth = "com.google.truth:truth:${Versions.truth}"
+    const val workManager = "android.arch.work:work-runtime-ktx:${Versions.workManager}"
 }
