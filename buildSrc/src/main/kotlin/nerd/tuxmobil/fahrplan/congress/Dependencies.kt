@@ -16,12 +16,14 @@ object GradlePlugins {
     private object Versions {
         const val androidGradle = "3.5.2"
         const val gradleVersions = "0.27.0"
+        const val proguardGradle = "6.0.3"
         const val sonarQubeGradle = "2.8"
         const val unmockGradle = "0.7.3"
     }
 
     const val androidGradle = "com.android.tools.build:gradle:${Versions.androidGradle}"
     const val gradleVersions = "com.github.ben-manes:gradle-versions-plugin:${Versions.gradleVersions}"
+    const val proguardGradle = "net.sf.proguard:proguard-gradle:${Versions.proguardGradle}"
     const val sonarQubeGradle = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${Versions.sonarQubeGradle}"
     const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     const val unmockGradle = "de.mobilej.unmock:UnMockPlugin:${Versions.unmockGradle}"
