@@ -1,16 +1,16 @@
 package nerd.tuxmobil.fahrplan.congress.models;
 
-import android.text.format.Time;
-
 import java.util.ArrayList;
 
+import info.metadude.android.eventfahrplan.commons.Clock;
+import info.metadude.android.eventfahrplan.commons.SystemClock;
 import nerd.tuxmobil.fahrplan.congress.utils.DateHelper;
 
 public class DateInfos extends ArrayList<DateInfo> {
 
     private static final long serialVersionUID = 1L;
 
-    public boolean sameDay(Time today, int lectureListDay) {
+    public boolean sameDay(Clock today, int lectureListDay) {
         String currentDate = DateHelper.getFormattedDate(today);
         for (DateInfo dateInfo : this) {
             if (dateInfo.dayIdx == lectureListDay &&
@@ -33,14 +33,12 @@ public class DateInfos extends ArrayList<DateInfo> {
         if (isEmpty()) {
             return -1;
         }
-        Time today = new Time();
-        today.setToNow();
-        today.hour -= hourOfDayChange;
-        today.minute -= minuteOfDayChange;
+        Clock todayClock = new SystemClock();
+        todayClock.minusHours(hourOfDayChange);
+        todayClock.minusMinutes(minuteOfDayChange);
+        todayClock.normalize();
 
-        today.normalize(true);
-
-        String currentDate = DateHelper.getFormattedDate(today);
+        String currentDate = DateHelper.getFormattedDate(todayClock);
 
         int dayIndex = -1;
         for (DateInfo dateInfo : this) {

@@ -3,8 +3,9 @@ package nerd.tuxmobil.fahrplan.congress.models;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.text.format.Time;
 
+import info.metadude.android.eventfahrplan.commons.Clock;
+import info.metadude.android.eventfahrplan.commons.SystemClock;
 import nerd.tuxmobil.fahrplan.congress.R;
 
 public class Lecture {
@@ -117,17 +118,15 @@ public class Lecture {
         return links == null ? "" : links;
     }
 
-    public Time getTime() {
-        Time t = new Time();
+    public Clock getClock() {
+        Clock clock = new SystemClock();
         String[] splitDate = date.split("-");
-        t.setToNow();
-        t.year = Integer.parseInt(splitDate[0]);
-        t.month = Integer.parseInt(splitDate[1]) - 1;
-        t.monthDay = Integer.parseInt(splitDate[2]);
-        t.hour = relStartTime / 60;
-        t.minute = relStartTime % 60;
-
-        return t;
+        clock.setYear(Integer.parseInt(splitDate[0]));
+        clock.setMonth(Integer.parseInt(splitDate[1]) - 1);
+        clock.setMonthDay(Integer.parseInt(splitDate[2]));
+        clock.setHour(relStartTime / 60);
+        clock.setMinute(relStartTime % 60);
+        return clock;
     }
 
     @SuppressWarnings("EqualsReplaceableByObjectsCall")

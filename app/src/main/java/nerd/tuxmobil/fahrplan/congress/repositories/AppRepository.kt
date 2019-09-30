@@ -1,7 +1,7 @@
 package nerd.tuxmobil.fahrplan.congress.repositories
 
 import android.content.Context
-import android.text.format.Time
+import info.metadude.android.eventfahrplan.commons.SystemClock
 import info.metadude.android.eventfahrplan.database.extensions.toContentValues
 import info.metadude.android.eventfahrplan.database.repositories.AlarmsDatabaseRepository
 import info.metadude.android.eventfahrplan.database.repositories.HighlightsDatabaseRepository
@@ -334,9 +334,8 @@ object AppRepository {
     fun readScheduleLastFetchingTime() =
             sharedPreferencesRepository.getScheduleLastFetchedAt()
 
-    fun updateScheduleLastFetchingTime() = with(Time()) {
-        setToNow()
-        sharedPreferencesRepository.setScheduleLastFetchedAt(toMillis(true))
+    fun updateScheduleLastFetchingTime() = with(SystemClock()) {
+        sharedPreferencesRepository.setScheduleLastFetchedAt(toMilliseconds())
     }
 
     fun sawScheduleChanges() =

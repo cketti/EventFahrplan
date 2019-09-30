@@ -5,12 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.text.format.Time;
 
 import org.ligi.tracedroid.logging.Log;
 
 import java.util.List;
 
+import info.metadude.android.eventfahrplan.commons.Clock;
+import info.metadude.android.eventfahrplan.commons.SystemClock;
 import nerd.tuxmobil.fahrplan.congress.MyApp;
 import nerd.tuxmobil.fahrplan.congress.R;
 import nerd.tuxmobil.fahrplan.congress.alarms.AlarmReceiver;
@@ -41,17 +42,16 @@ public final class OnBootReceiver extends BroadcastReceiver {
 
         MyApp.LogDebug(LOG_TAG, "onReceive (reboot)");
 
-        Time now = new Time();
-        Time storedAlarmTime = new Time();
-        now.setToNow();
-        now.second += 15;
-        now.normalize(true);
+        Clock nowClock = new SystemClock();
+        Clock storedAlarmTime = new SystemClock();
+        nowClock.plusSeconds(15);
+        nowClock.normalize();
 
         AppRepository appRepository = AppRepository.INSTANCE;
         List<Alarm> alarms = appRepository.readAlarms();
         for (Alarm alarm : alarms) {
-            storedAlarmTime.set(alarm.getStartTime());
-            if (now.before(storedAlarmTime)) {
+            storedAlarmTime.setToMilliseconds(alarm.getStartTime());
+            if (nowClock.isBefore(storedAlarmTime)) {
                 Log.d(getClass().getName(), "Scheduling alarm for event: " + alarm.getEventId() + ", " + alarm.getEventTitle());
                 SchedulableAlarm schedulableAlarm = AlarmExtensions.toSchedulableAlarm(alarm);
                 AlarmServices.scheduleEventAlarm(context, schedulableAlarm);
@@ -67,9 +67,8 @@ public final class OnBootReceiver extends BroadcastReceiver {
         boolean doAutoUpdates = prefs.getBoolean("auto_update", defaultValue);
         if (doAutoUpdates) {
             long lastFetchedAt = appRepository.readScheduleLastFetchingTime();
-            long nowMillis;
-            now.setToNow();
-            nowMillis = now.toMillis(true);
+            nowClock.setToNow();
+            long nowMillis = nowClock.toMilliseconds();
 
             long interval = FahrplanMisc.setUpdateAlarm(context, true);
 
