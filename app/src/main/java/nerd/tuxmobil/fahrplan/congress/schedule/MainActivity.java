@@ -311,6 +311,18 @@ public class MainActivity extends BaseActivity implements
             sidePane.setVisibility(isScreenLocked ? View.GONE : View.VISIBLE);
         }
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            boolean isScheduleUpdateNotification = intent.getBooleanExtra(BundleKeys.SCHEDULE_UPDATE_NOTIFICATION, false);
+            if (isScheduleUpdateNotification) {
+                Log.d(getClass().getName(), "Received schedule update notification.");
+                Fragment fragment = findFragment(ChangeListFragment.FRAGMENT_TAG);
+                if (fragment instanceof ChangeListFragment) {
+                    ((ChangeListFragment) fragment).onRefresh();
+                }
+            }
+        }
+
         if (!appRepository.sawScheduleChanges()) {
             showChangesDialog();
         }

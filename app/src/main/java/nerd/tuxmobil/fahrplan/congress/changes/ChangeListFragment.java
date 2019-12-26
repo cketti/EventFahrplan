@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import org.ligi.tracedroid.logging.Log;
+
 import java.util.List;
 
 import nerd.tuxmobil.fahrplan.congress.MyApp;
@@ -128,6 +130,7 @@ public class ChangeListFragment extends AbstractListFragment {
     }
 
     public void onRefresh() {
+        Log.d(getClass().getName(), "Reloading schedules changes.");
         List<Lecture> updatedChanges = FahrplanMisc.readChanges(appRepository);
         if (changesList != null) {
             changesList.clear();

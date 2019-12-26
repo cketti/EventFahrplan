@@ -17,6 +17,7 @@ import kotlin.Unit;
 import nerd.tuxmobil.fahrplan.congress.MyApp;
 import nerd.tuxmobil.fahrplan.congress.MyApp.TASKS;
 import nerd.tuxmobil.fahrplan.congress.R;
+import nerd.tuxmobil.fahrplan.congress.contract.BundleKeys;
 import nerd.tuxmobil.fahrplan.congress.models.Lecture;
 import nerd.tuxmobil.fahrplan.congress.net.ConnectivityObserver;
 import nerd.tuxmobil.fahrplan.congress.net.CustomHttpClient;
@@ -55,6 +56,7 @@ public class UpdateService extends JobIntentService {
 
     private void showScheduleUpdateNotification(String version, int changesCount) {
         Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.putExtra(BundleKeys.SCHEDULE_UPDATE_NOTIFICATION, "true");
         notificationIntent.setFlags(
                 Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         PendingIntent contentIntent = PendingIntent

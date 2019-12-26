@@ -38,6 +38,10 @@ public interface BundleKeys {
     String SIDEPANE =
             "nerd.tuxmobil.fahrplan.congress.SIDEPANE";
 
+    // Schedule update notification intent
+    String SCHEDULE_UPDATE_NOTIFICATION =
+            "nerd.tuxmobil.fahrplan.congress.SCHEDULE_UPDATE_NOTIFICATION";
+
     // Schedule reload
     String REQUIRES_SCHEDULE_RELOAD =
             "nerd.tuxmobil.fahrplan.congress.REQUIRES_SCHEDULE_RELOAD";
