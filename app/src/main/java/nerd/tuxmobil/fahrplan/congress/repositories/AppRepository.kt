@@ -1,6 +1,7 @@
 package nerd.tuxmobil.fahrplan.congress.repositories
 
 import android.content.Context
+import android.net.Uri
 import androidx.core.net.toUri
 import info.metadude.android.eventfahrplan.commons.logging.Logging
 import info.metadude.android.eventfahrplan.commons.temporal.Moment
@@ -25,6 +26,7 @@ import nerd.tuxmobil.fahrplan.congress.models.Alarm
 import nerd.tuxmobil.fahrplan.congress.models.Meta
 import nerd.tuxmobil.fahrplan.congress.models.Session
 import nerd.tuxmobil.fahrplan.congress.net.*
+import nerd.tuxmobil.fahrplan.congress.preferences.AlarmTonePreference
 import nerd.tuxmobil.fahrplan.congress.preferences.SharedPreferencesRepository
 import nerd.tuxmobil.fahrplan.congress.serialization.ScheduleChanges
 import okhttp3.OkHttpClient
@@ -37,6 +39,7 @@ object AppRepository {
      * Also used in app/src/<flavor>/res/xml/track_resource_names.xml.
      */
     const val ENGELSYSTEM_ROOM_NAME = "Engelshifts"
+    private val ALARM_TONE_SILENT_URI = null
     private const val ALL_DAYS = -1
 
     private lateinit var context: Context
@@ -394,8 +397,18 @@ object AppRepository {
     fun readAlarmTimeIndex() =
             sharedPreferencesRepository.getAlarmTimeIndex()
 
-    fun readAlarmToneUri() =
-            sharedPreferencesRepository.getAlarmTone().toUri()
+    /**
+     * Returns the alarm tone `Uri` or `null` for silent alarms.
+     */
+    fun readAlarmToneUri(): Uri? {
+        val alarmTone = sharedPreferencesRepository.getAlarmTone()
+        val defaultAlarmToneUri = AlarmTonePreference.DEFAULT_VALUE_URI
+        return when {
+            alarmTone == null -> defaultAlarmToneUri
+            alarmTone.isEmpty() -> ALARM_TONE_SILENT_URI
+            else -> alarmTone.toUri()
+        }
+    }
 
     fun readAlternativeHighlightingEnabled() =
             sharedPreferencesRepository.isAlternativeHighlightingEnabled()
