@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.widget.EditText
+import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import androidx.core.content.withStyledAttributes
 import androidx.preference.EditTextPreference
@@ -63,10 +64,12 @@ open class StyleableEditTextPreference : EditTextPreference {
         }
     }
 
-    private fun applyCustomBehavior() = setOnBindEditTextListener { editText ->
+    private fun applyCustomBehavior() = setOnBindEditTextListener(::onBindEditText)
+
+    @CallSuper
+    protected open fun onBindEditText(editText: EditText) {
         editText.hint = hint
         editText.setSingleLine(singleLine)
         editText.maxLines = maxLines
     }
-
 }

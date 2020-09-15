@@ -35,14 +35,12 @@ class ValidateableEditTextPreference : StyleableEditTextPreference {
     @Suppress("unused")
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         applyAttributes(context, attrs)
-        applyInputTextValidation()
     }
 
     @Suppress("unused")
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr) {
         applyAttributes(context, attrs)
-        applyInputTextValidation()
     }
 
     @Suppress("unused")
@@ -50,7 +48,6 @@ class ValidateableEditTextPreference : StyleableEditTextPreference {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
             super(context, attrs, defStyleAttr, defStyleRes) {
         applyAttributes(context, attrs)
-        applyInputTextValidation()
     }
 
     private fun applyAttributes(context: Context, attrs: AttributeSet?) {
@@ -66,7 +63,8 @@ class ValidateableEditTextPreference : StyleableEditTextPreference {
         }
     }
 
-    private fun applyInputTextValidation() = setOnBindEditTextListener { editText ->
+    override fun onBindEditText(editText: EditText) {
+        super.onBindEditText(editText)
         editText.doAfterTextChanged { editable ->
             requireNotNull(editable)
             val url = editable.toString().trim()
