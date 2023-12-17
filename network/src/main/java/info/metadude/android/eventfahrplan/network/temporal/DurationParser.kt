@@ -1,7 +1,6 @@
 package info.metadude.android.eventfahrplan.network.temporal
 
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
+import org.threeten.bp.Duration
 
 /**
  * Parser for the duration string used in the schedule.
@@ -28,17 +27,20 @@ object DurationParser {
     }
 
     private fun extractHoursAndMinutes(hoursString: String, minutesString: String): Int {
-        val hours = hoursString.toInt()
-        val minutes = minutesString.toInt()
-
-        return hours.hours.inWholeMinutes.toInt() + minutes
+        return Duration
+            .ofHours(hoursString.toLong())
+            .plusMinutes(extractMinutesOnly(minutesString).toLong())
+            .toMinutes()
+            .toInt()
     }
 
     // This format was introduced for the CCCamp 2023 schedule. Hopefully support for it can be removed soon.
     // See https://github.com/EventFahrplan/EventFahrplan/pull/561
     private fun extractDaysAndHoursAndMinutes(daysString: String, hoursString: String, minutesString: String): Int {
-        val days = daysString.toInt()
-
-        return days.days.inWholeMinutes.toInt() + extractHoursAndMinutes(hoursString, minutesString)
+        return Duration
+            .ofDays(daysString.toLong())
+            .plusMinutes(extractHoursAndMinutes(hoursString, minutesString).toLong())
+            .toMinutes()
+            .toInt()
     }
 }
