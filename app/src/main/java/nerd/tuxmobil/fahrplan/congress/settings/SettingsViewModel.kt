@@ -27,9 +27,21 @@ internal class SettingsViewModel(
     private val effectsChannel = Channel<SettingsEffect>()
     val effects = effectsChannel.receiveAsFlow()
 
-    fun buttonClick() {
+    fun event(event: SettingsEvent) {
+        when (event) {
+            SettingsEvent.AutoUpdateClicked -> toggleAutoUpdateEnabled()
+            SettingsEvent.ScheduleStatisticClicked -> navigateToScheduleStatistic()
+        }
+    }
+
+    private fun toggleAutoUpdateEnabled() {
         viewModelScope.launch {
-//            settingsRepository.setAutoUpdateEnabled(uiState.value.settings.isAutoUpdateEnabled.not())
+            settingsRepository.setAutoUpdateEnabled(uiState.value.settings.isAutoUpdateEnabled.not())
+        }
+    }
+
+    private fun navigateToScheduleStatistic() {
+        viewModelScope.launch {
             effectsChannel.send(SettingsEffect.NavigateTo(ScheduleStatisticDestination))
         }
     }

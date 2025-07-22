@@ -50,7 +50,7 @@ class NewSettingsFragment : Fragment() {
             startDestination = "settings",
         ) {
             composable(route = "settings") {
-                SettingsScreen(state, buttonClick = { viewModel.buttonClick() })
+                SettingsScreen(state, sendEvent = viewModel::event)
             }
             dialog(route = "refresh_interval") {
                 AlertDialog(
