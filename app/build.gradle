@@ -192,6 +192,8 @@ gradle.projectsEvaluated {
 }
 
 dependencies {
+    implementation "androidx.navigation:navigation-compose:2.9.2"
+
     implementation project(":commons")
     implementation project(":database")
     implementation project(":network")

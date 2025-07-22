@@ -2,16 +2,18 @@ package nerd.tuxmobil.fahrplan.congress.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import nerd.tuxmobil.fahrplan.congress.preferences.Settings
 import nerd.tuxmobil.fahrplan.congress.preferences.SettingsRepository
 import nerd.tuxmobil.fahrplan.congress.repositories.AppRepository
 
-class SettingsViewModel(
+internal class SettingsViewModel(
     private val settingsRepository: SettingsRepository = AppRepository.settingsRepository,
 ) : ViewModel() {
     val uiState: StateFlow<SettingsUiState> = settingsRepository.getSettingsStream()
@@ -22,9 +24,13 @@ class SettingsViewModel(
             initialValue = SettingsUiState()
         )
 
+    private val effectsChannel = Channel<SettingsEffect>()
+    val effects = effectsChannel.receiveAsFlow()
+
     fun buttonClick() {
         viewModelScope.launch {
-            settingsRepository.setAutoUpdateEnabled(uiState.value.settings.isAutoUpdateEnabled.not())
+//            settingsRepository.setAutoUpdateEnabled(uiState.value.settings.isAutoUpdateEnabled.not())
+            effectsChannel.send(SettingsEffect.NavigateTo(ScheduleStatisticDestination))
         }
     }
 }
