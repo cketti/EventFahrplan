@@ -76,6 +76,13 @@
                 android:label="@string/settings"
                 android:resizeableActivity="true"
                 tools:targetApi="24" />
+        <!-- FIXME: remove after prototyping -->
+        <activity
+                android:name="nerd.tuxmobil.fahrplan.congress.settings.NewSettingsActivity"
+                android:theme="@style/Theme.Congress.NoActionBar"
+                android:label="@string/settings"
+                android:resizeableActivity="true"
+                tools:targetApi="24" />
         <service
                 android:name=".autoupdate.UpdateService"
                 android:exported="false"

@@ -61,6 +61,7 @@ import nerd.tuxmobil.fahrplan.congress.sidepane.OnSidePaneCloseListener
 import nerd.tuxmobil.fahrplan.congress.utils.ConfirmationDialog.OnConfirmationDialogClicked
 import nerd.tuxmobil.fahrplan.congress.utils.showWhenLockedCompat
 import androidx.core.graphics.drawable.toDrawable
+import nerd.tuxmobil.fahrplan.congress.settings.NewSettingsActivity
 
 class MainActivity : BaseActivity(),
     MenuProvider,
@@ -262,6 +263,7 @@ class MainActivity : BaseActivity(),
             R.id.menu_item_about -> viewModel.showAboutDialog()
             R.id.menu_item_alarms -> openAlarms()
             R.id.menu_item_settings -> SettingsActivity.startForResult(this)
+            R.id.menu_item_settings_2 -> NewSettingsActivity.startForResult(this)
             R.id.menu_item_search -> openSearch()
             R.id.menu_item_schedule_changes -> openSessionChanges()
             R.id.menu_item_favorites -> openFavorites()

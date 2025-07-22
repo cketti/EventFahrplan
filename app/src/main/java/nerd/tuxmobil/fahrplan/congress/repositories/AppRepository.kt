@@ -74,8 +74,10 @@ import nerd.tuxmobil.fahrplan.congress.net.ParseResult
 import nerd.tuxmobil.fahrplan.congress.net.ParseScheduleResult
 import nerd.tuxmobil.fahrplan.congress.net.ParseShiftsResult
 import nerd.tuxmobil.fahrplan.congress.preferences.AlarmTonePreference
+import nerd.tuxmobil.fahrplan.congress.preferences.DefaultSettingsRepository
 import nerd.tuxmobil.fahrplan.congress.preferences.RealSharedPreferencesRepository
 import nerd.tuxmobil.fahrplan.congress.preferences.SharedPreferencesRepository
+import nerd.tuxmobil.fahrplan.congress.preferences.SettingsRepository
 import nerd.tuxmobil.fahrplan.congress.repositories.LoadScheduleState.FetchFailure
 import nerd.tuxmobil.fahrplan.congress.repositories.LoadScheduleState.FetchSuccess
 import nerd.tuxmobil.fahrplan.congress.repositories.LoadScheduleState.Fetching
@@ -136,6 +138,7 @@ object AppRepository : SearchRepository,
     private lateinit var scheduleNetworkRepository: ScheduleNetworkRepository
     private lateinit var engelsystemRepository: EngelsystemRepository
     private lateinit var sharedPreferencesRepository: SharedPreferencesRepository
+    lateinit var settingsRepository: SettingsRepository
     private lateinit var roomStatesRepository: RoomStatesRepository
     private lateinit var sessionsTransformer: SessionsTransformer
 
@@ -412,29 +415,30 @@ object AppRepository : SearchRepository,
     }
 
     fun initialize(
-            context: Context,
-            logging: Logging,
-            executionContext: ExecutionContext = AppExecutionContext,
-            databaseScope: DatabaseScope = DatabaseScope.of(executionContext, AppExceptionHandler(logging)),
-            networkScope: NetworkScope = NetworkScope.of(executionContext, AppExceptionHandler(logging)),
-            okHttpClient: OkHttpClient = CustomHttpClient.createHttpClient(context),
-            alarmsDatabaseRepository: AlarmsDatabaseRepository = AlarmsDatabaseRepository.get(context, logging),
-            highlightsDatabaseRepository: HighlightsDatabaseRepository = HighlightsDatabaseRepository.get(context),
-            sessionsDatabaseRepository: SessionsDatabaseRepository = SessionsDatabaseRepository.get(context, logging),
-            metaDatabaseRepository: MetaDatabaseRepository = MetaDatabaseRepository.get(context),
-            scheduleNetworkRepository: ScheduleNetworkRepository = RealScheduleNetworkRepository(logging),
-            engelsystemRepository: EngelsystemRepository = SimpleEngelsystemRepository(
+        context: Context,
+        logging: Logging,
+        executionContext: ExecutionContext = AppExecutionContext,
+        databaseScope: DatabaseScope = DatabaseScope.of(executionContext, AppExceptionHandler(logging)),
+        networkScope: NetworkScope = NetworkScope.of(executionContext, AppExceptionHandler(logging)),
+        okHttpClient: OkHttpClient = CustomHttpClient.createHttpClient(context),
+        alarmsDatabaseRepository: AlarmsDatabaseRepository = AlarmsDatabaseRepository.get(context, logging),
+        highlightsDatabaseRepository: HighlightsDatabaseRepository = HighlightsDatabaseRepository.get(context),
+        sessionsDatabaseRepository: SessionsDatabaseRepository = SessionsDatabaseRepository.get(context, logging),
+        metaDatabaseRepository: MetaDatabaseRepository = MetaDatabaseRepository.get(context),
+        scheduleNetworkRepository: ScheduleNetworkRepository = RealScheduleNetworkRepository(logging),
+        engelsystemRepository: EngelsystemRepository = SimpleEngelsystemRepository(
                 callFactory = okHttpClient,
                 api = EngelsystemApi,
             ),
-            sharedPreferencesRepository: SharedPreferencesRepository = RealSharedPreferencesRepository(context),
-            roomStatesRepository: RoomStatesRepository = SimpleRoomStatesRepository(
+        sharedPreferencesRepository: SharedPreferencesRepository = RealSharedPreferencesRepository(context),
+        settingsRepository: SettingsRepository = DefaultSettingsRepository(context),
+        roomStatesRepository: RoomStatesRepository = SimpleRoomStatesRepository(
                 url = FOSDEM_ROOM_STATES_URL,
                 path = FOSDEM_ROOM_STATES_PATH,
                 httpClient = okHttpClient,
                 api = RoomStatesApi,
             ),
-            sessionsTransformer: SessionsTransformer = SessionsTransformer.createSessionsTransformer()
+        sessionsTransformer: SessionsTransformer = SessionsTransformer.createSessionsTransformer()
     ) {
         this.logging = logging
         this.executionContext = executionContext
@@ -448,6 +452,7 @@ object AppRepository : SearchRepository,
         this.scheduleNetworkRepository = scheduleNetworkRepository
         this.engelsystemRepository = engelsystemRepository
         this.sharedPreferencesRepository = sharedPreferencesRepository
+        this.settingsRepository = settingsRepository
         this.roomStatesRepository = roomStatesRepository
         this.sessionsTransformer = sessionsTransformer
     }
