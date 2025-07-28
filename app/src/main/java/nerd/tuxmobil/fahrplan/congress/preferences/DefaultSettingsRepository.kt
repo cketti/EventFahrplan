@@ -115,8 +115,8 @@ internal class DefaultSettingsRepository(
             isAlternativeHighlightingEnabled = isAlternativeHighlightingEnabled(),
             isFastSwipingEnabled = isFastSwipingEnabled(),
             alarmTone = getAlarmTone(),
-            isInsistentAlarmsEnabled = isUseDeviceTimeZoneEnabled(),
-            alarmTimeIndex = getAlarmTimeIndex(),
+            isInsistentAlarmsEnabled = isInsistentAlarmsEnabled(),
+            alarmTime = getAlarmTime(),
             scheduleRefreshInterval = getScheduleRefreshInterval(),
             isAutoUpdateEnabled = isAutoUpdateEnabled(),
             alternativeScheduleUrl = getAlternativeScheduleUrl(),
@@ -131,14 +131,11 @@ internal class DefaultSettingsRepository(
         return value.toInt()
     }
 
-    private fun getAlarmTimeIndex(): Int {
+    private fun getAlarmTime(): Int {
         val key = context.getString(R.string.preference_key_alarm_time_index)
         val defaultValue = context.getString(R.string.preference_default_value_alarm_time_value)
         val value = preferences.getString(key, defaultValue)!!
-        val entryValues = context.resources.getStringArray(R.array.preference_entry_values_alarm_time)
-        val defaultIndex = context.resources.getInteger(R.integer.preference_default_value_alarm_time_index)
-        val index = entryValues.indexOf(value)
-        return if (index == -1) defaultIndex else index
+        return value.toInt()
     }
 
     private fun getAlarmTone(): String? {
@@ -168,6 +165,12 @@ internal class DefaultSettingsRepository(
     private fun isAutoUpdateEnabled(): Boolean {
         val key = context.getString(R.string.preference_key_auto_update_enabled)
         val defaultValue = context.resources.getBoolean(R.bool.preference_default_value_auto_update_enabled)
+        return preferences.getBoolean(key, defaultValue)
+    }
+
+    private fun isInsistentAlarmsEnabled(): Boolean {
+        val key = context.getString(R.string.preference_key_insistent_alarms_enabled)
+        val defaultValue = context.resources.getBoolean(R.bool.preference_default_value_insistent_alarms_enabled)
         return preferences.getBoolean(key, defaultValue)
     }
 

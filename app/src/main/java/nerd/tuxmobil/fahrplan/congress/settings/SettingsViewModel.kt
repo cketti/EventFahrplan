@@ -1,5 +1,6 @@
 package nerd.tuxmobil.fahrplan.congress.settings
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
@@ -28,22 +29,109 @@ internal class SettingsViewModel(
     val effects = effectsChannel.receiveAsFlow()
 
     fun event(event: SettingsEvent) {
+        viewModelScope.launch {
+            handleEvent(event)
+        }
+    }
+
+    private suspend fun handleEvent(event: SettingsEvent) {
         when (event) {
-            SettingsEvent.AutoUpdateClicked -> toggleAutoUpdateEnabled()
+            SettingsEvent.ScheduleRefreshIntervalClicked -> navigateToScheduleRefreshInterval()
+            is SettingsEvent.SetScheduleRefreshInterval -> updateScheduleRefreshInterval(event.refreshInterval)
             SettingsEvent.ScheduleStatisticClicked -> navigateToScheduleStatistic()
+
+            SettingsEvent.AutoUpdateClicked -> toggleAutoUpdateEnabled()
+            SettingsEvent.DeviceTimezoneClicked -> toggleUseDeviceTimeZoneEnabled()
+            SettingsEvent.CustomizeNotificationsClicked -> launchNotificationSettingsScreen()
+            SettingsEvent.AlternativeScheduleUrlClicked -> navigateToAlternativeScheduleUrl()
+            SettingsEvent.AlternativeHighlightingClicked -> toggleAlternativeHighlightingEnabled()
+            SettingsEvent.FastSwipingClicked -> toggleFastSwipingEnabled()
+
+            SettingsEvent.AlarmToneClicked -> pickAlarmTone()
+            SettingsEvent.InsistentAlarmClicked -> toggleInsistentAlarmsEnabled()
+            SettingsEvent.AlarmTimeClicked -> navigateToAlarmTime()
+            is SettingsEvent.AlarmTonePicked -> updateAlarmTone(event.alarmTone)
+            is SettingsEvent.SetAlarmTime -> updateAlarmTime(event.alarmTime)
+
+            SettingsEvent.EngelsystemUrlClicked -> navigateToEngelsystemUrl()
         }
     }
 
-    private fun toggleAutoUpdateEnabled() {
-        viewModelScope.launch {
-            settingsRepository.setAutoUpdateEnabled(uiState.value.settings.isAutoUpdateEnabled.not())
-        }
+    private suspend fun navigateToScheduleRefreshInterval() {
+        effectsChannel.send(
+            SettingsEffect.NavigateTo(SettingsNavigationDestination.ScheduleRefreshInterval)
+        )
     }
 
-    private fun navigateToScheduleStatistic() {
-        viewModelScope.launch {
-            effectsChannel.send(SettingsEffect.NavigateTo(ScheduleStatisticDestination))
-        }
+    private suspend fun updateScheduleRefreshInterval(refreshInterval: Int) {
+        settingsRepository.setScheduleRefreshInterval(refreshInterval)
+        navigateBack()
+    }
+
+    private suspend fun navigateToScheduleStatistic() {
+        effectsChannel.send(
+            SettingsEffect.NavigateTo(SettingsNavigationDestination.ScheduleStatistic)
+        )
+    }
+
+    private suspend fun toggleAutoUpdateEnabled() {
+        val autoUpdateEnabled = uiState.value.settings.isAutoUpdateEnabled
+        settingsRepository.setAutoUpdateEnabled(autoUpdateEnabled.not())
+    }
+
+    private suspend fun toggleUseDeviceTimeZoneEnabled() {
+        val useDeviceTimeZoneEnabled = uiState.value.settings.isUseDeviceTimeZoneEnabled
+        settingsRepository.setUseDeviceTimeZone(useDeviceTimeZoneEnabled.not())
+    }
+
+    private suspend fun launchNotificationSettingsScreen() {
+        effectsChannel.send(SettingsEffect.LaunchNotificationSettingsScreen)
+    }
+
+    private suspend fun navigateToAlternativeScheduleUrl() {
+        effectsChannel.send(
+            SettingsEffect.NavigateTo(SettingsNavigationDestination.AlternativeScheduleUrl)
+        )
+    }
+
+    private suspend fun toggleAlternativeHighlightingEnabled() {
+        val alternativeHighlightingEnabled = uiState.value.settings.isAlternativeHighlightingEnabled
+        settingsRepository.setAlternativeHighlighting(alternativeHighlightingEnabled.not())
+    }
+
+    private suspend fun toggleFastSwipingEnabled() {
+        val fastSwipingEnabled = uiState.value.settings.isFastSwipingEnabled
+        settingsRepository.setFastSwiping(fastSwipingEnabled.not())
+    }
+
+    private suspend fun pickAlarmTone() {
+        effectsChannel.send(SettingsEffect.PickAlarmTone)
+    }
+
+    private suspend fun toggleInsistentAlarmsEnabled() {
+        val insistentAlarmsEnabled = uiState.value.settings.isInsistentAlarmsEnabled
+        settingsRepository.setInsistentAlarms(insistentAlarmsEnabled.not())
+    }
+
+    private suspend fun navigateToAlarmTime() {
+        effectsChannel.send(SettingsEffect.NavigateTo(SettingsNavigationDestination.AlarmTime))
+    }
+
+    private suspend fun updateAlarmTone(alarmTone: Uri) {
+        settingsRepository.setAlarmTone(alarmTone.toString())
+    }
+
+    private suspend fun updateAlarmTime(alarmTime: Int) {
+        settingsRepository.setAlarmTime(alarmTime)
+        navigateBack()
+    }
+
+    private suspend fun navigateToEngelsystemUrl() {
+        effectsChannel.send(SettingsEffect.NavigateTo(SettingsNavigationDestination.EngelSystemUrl))
+    }
+
+    private suspend fun navigateBack() {
+        effectsChannel.send(SettingsEffect.NavigateBack)
     }
 }
 

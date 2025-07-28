@@ -1,8 +1,6 @@
 package nerd.tuxmobil.fahrplan.congress.settings
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -10,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Switch
@@ -48,7 +45,7 @@ internal fun SettingsScreen(
                     ClickPreference(
                         title = stringResource(R.string.preference_title_schedule_refresh_interval),
                         subtitle = state.settings.scheduleRefreshIntervalToUiString(),
-                        onClick = { /* FIXME */ }
+                        onClick = { sendEvent(SettingsEvent.ScheduleRefreshIntervalClicked) },
                     )
 
                     ClickPreference(
@@ -63,43 +60,41 @@ internal fun SettingsScreen(
                         title = stringResource(R.string.preference_title_auto_update_enabled),
                         subtitle = stringResource(R.string.preference_summary_auto_update_enabled),
                         checked = state.settings.isAutoUpdateEnabled,
-                        onCheckedChange = {
-                            sendEvent(SettingsEvent.AutoUpdateClicked)
-                        },
+                        onCheckedChange = { sendEvent(SettingsEvent.AutoUpdateClicked) },
                     )
 
                     SwitchPreference(
                         title = stringResource(R.string.preference_title_use_device_time_zone_enabled),
                         subtitle = stringResource(R.string.preference_summary_use_device_time_zone_enabled),
                         checked = state.settings.isUseDeviceTimeZoneEnabled,
-                        onCheckedChange = { /* FIXME */ },
+                        onCheckedChange = { sendEvent(SettingsEvent.DeviceTimezoneClicked) },
                     )
 
                     // TODO: add icon for external action
                     ClickPreference(
                         title = stringResource(R.string.preference_title_app_notification_settings),
                         subtitle = stringResource(R.string.preference_summary_app_notification_settings),
-                        onClick = { /* FIXME */ },
+                        onClick = { sendEvent(SettingsEvent.CustomizeNotificationsClicked) },
                     )
 
                     ClickPreference(
                         title = stringResource(R.string.preference_title_alternative_schedule_url),
                         subtitle = stringResource(R.string.preference_summary_alternative_schedule_url),
-                        onClick = { /* FIXME */ },
+                        onClick = { sendEvent(SettingsEvent.AlternativeScheduleUrlClicked) },
                     )
 
                     SwitchPreference(
                         title = stringResource(R.string.preference_title_alternative_highlighting_enabled),
                         subtitle = stringResource(R.string.preference_summary_alternative_highlighting_enabled),
                         checked = state.settings.isAlternativeHighlightingEnabled,
-                        onCheckedChange = { /* FIXME */ },
+                        onCheckedChange = { sendEvent(SettingsEvent.AlternativeHighlightingClicked) },
                     )
 
                     SwitchPreference(
                         title = stringResource(R.string.preference_title_fast_swiping_enabled),
                         subtitle = stringResource(R.string.preference_summary_fast_swiping_enabled),
                         checked = state.settings.isFastSwipingEnabled,
-                        onCheckedChange = { /* FIXME */ },
+                        onCheckedChange = { sendEvent(SettingsEvent.FastSwipingClicked) },
                     )
                 }
 
@@ -108,20 +103,20 @@ internal fun SettingsScreen(
                     ClickPreference(
                         title = stringResource(R.string.preference_title_alarm_tone),
                         subtitle = stringResource(R.string.preference_summary_alarm_tone),
-                        onClick = { /* FIXME */ },
+                        onClick = { sendEvent(SettingsEvent.AlarmToneClicked) },
                     )
 
                     SwitchPreference(
                         title = stringResource(R.string.preference_title_insistent_alarms_enabled),
                         subtitle = stringResource(R.string.preference_summary_insistent_alarms_enabled),
                         checked = state.settings.isInsistentAlarmsEnabled,
-                        onCheckedChange = { /* FIXME */ },
+                        onCheckedChange = { sendEvent(SettingsEvent.InsistentAlarmClicked) },
                     )
 
                     ClickPreference(
                         title = stringResource(R.string.preference_dialog_title_alarm_time),
-                        subtitle = state.settings.alarmTimeIndexToUiString(),
-                        onClick = { /* FIXME */ },
+                        subtitle = state.settings.alarmTimeToUiString(),
+                        onClick = { sendEvent(SettingsEvent.AlarmTimeClicked) },
                     )
 
                 }
@@ -129,7 +124,7 @@ internal fun SettingsScreen(
                 Category(text = stringResource(R.string.preference_engelsystem_category_title)) {
                     ClickPreference(
                         title = stringResource(R.string.preference_title_engelsystem_json_export_url),
-                        onClick = { /* FIXME */ },
+                        onClick = { sendEvent(SettingsEvent.EngelsystemUrlClicked) },
                     )
                 }
             }
