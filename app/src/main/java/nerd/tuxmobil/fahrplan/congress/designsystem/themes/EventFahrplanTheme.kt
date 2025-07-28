@@ -1,6 +1,7 @@
 package nerd.tuxmobil.fahrplan.congress.designsystem.themes
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
@@ -35,5 +36,10 @@ object EventFahrplanTheme {
         @Composable
         @ReadOnlyComposable
         get() = MaterialTheme.typography
+
+    val colorScheme: ColorScheme
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colorScheme
 
 }
