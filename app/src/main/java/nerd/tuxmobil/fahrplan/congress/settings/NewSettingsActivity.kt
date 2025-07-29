@@ -29,6 +29,7 @@ class NewSettingsActivity : BaseActivity(R.layout.settings) {
         setSupportActionBar(toolbar)
         val actionBarColor = ContextCompat.getColor(this, R.color.colorActionBar)
         supportActionBar!!.setBackgroundDrawable(actionBarColor.toDrawable())
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         if (savedInstanceState == null) {
             supportFragmentManager.commit {

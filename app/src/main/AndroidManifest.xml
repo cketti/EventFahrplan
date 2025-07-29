@@ -82,7 +82,12 @@
                 android:theme="@style/Theme.Congress.NoActionBar"
                 android:label="@string/settings"
                 android:resizeableActivity="true"
-                tools:targetApi="24" />
+                android:parentActivityName="nerd.tuxmobil.fahrplan.congress.schedule.MainActivity"
+                tools:targetApi="24">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="nerd.tuxmobil.fahrplan.congress.schedule.MainActivity"/>
+        </activity>
         <service
                 android:name=".autoupdate.UpdateService"
                 android:exported="false"
