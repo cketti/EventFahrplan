@@ -10,7 +10,7 @@ import nerd.tuxmobil.fahrplan.congress.R
 import nerd.tuxmobil.fahrplan.congress.base.BaseActivity
 import androidx.core.graphics.drawable.toDrawable
 
-class NewSettingsActivity : BaseActivity(R.layout.settings) {
+class NewSettingsActivity : BaseActivity(R.layout.new_settings) {
 
     companion object {
 
