@@ -2,7 +2,6 @@ package nerd.tuxmobil.fahrplan.congress.settings
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -14,10 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalRippleConfiguration
-import androidx.compose.material3.RippleConfiguration
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -26,7 +23,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -318,12 +314,20 @@ internal fun SwitchPreference(
     modifier: Modifier = Modifier,
     subtitle: String? = null,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
             .minimumInteractiveComponentSize()
-            .clickable(onClick = { onCheckedChange(checked.not()) })
+            .toggleable(
+                value = checked,
+                interactionSource = interactionSource,
+                indication = ripple(),
+                role = Role.Switch,
+                onValueChange = onCheckedChange,
+            )
             .padding(
                 horizontal = HORIZONTAL_PADDING_DP.dp,
                 vertical = PREFERENCE_VERTICAL_PADDING_DP.dp,
@@ -335,10 +339,15 @@ internal fun SwitchPreference(
             modifier = Modifier.weight(1f),
         )
 
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-        )
+        CompositionLocalProvider(LocalRippleConfiguration provides null) {
+            Switch(
+                checked = checked,
+                onCheckedChange = null,
+                // Clicks on the row will highlight the switch thumb
+                interactionSource = interactionSource,
+                modifier = Modifier.padding(start = 16.dp),
+            )
+        }
     }
 }
 
