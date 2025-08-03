@@ -17,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import nerd.tuxmobil.fahrplan.congress.R
@@ -44,7 +46,7 @@ internal fun SettingsListScreen(
                 CategoryDevelopment(state, sendEvent)
                 CategoryGeneral(state, sendEvent)
                 CategoryAlarms(state, sendEvent)
-                CategoryEngelsystem(sendEvent)
+                CategoryEngelsystem(state, sendEvent)
             }
         }
     }
@@ -149,11 +151,48 @@ private fun CategoryAlarms(
 }
 
 @Composable
-private fun CategoryEngelsystem(sendEvent: (SettingsEvent) -> Unit) {
+private fun CategoryEngelsystem(state: SettingsUiState, sendEvent: (SettingsEvent) -> Unit) {
     Category(text = stringResource(R.string.preference_engelsystem_category_title)) {
-        ClickPreference(
-            title = stringResource(R.string.preference_title_engelsystem_json_export_url),
+        EngelsystemShiftsUrlPreference(
+            engelsystemShiftsUrl = state.settings.engelsystemShiftsUrl,
             onClick = { sendEvent(SettingsEvent.EngelsystemUrlClicked) },
+        )
+    }
+}
+
+@Composable
+private fun EngelsystemShiftsUrlPreference(
+    engelsystemShiftsUrl: String?,
+    onClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .minimumInteractiveComponentSize()
+            .clickable(onClick = onClick)
+            .padding(
+                horizontal = HORIZONTAL_PADDING_DP.dp,
+                vertical = PREFERENCE_VERTICAL_PADDING_DP.dp,
+            )
+    ) {
+        Text(
+            text = stringResource(R.string.preference_title_engelsystem_json_export_url),
+            style = EventFahrplanTheme.typography.titleLarge,
+        )
+
+        Text(
+            text = if (engelsystemShiftsUrl.isNullOrEmpty()) {
+                AnnotatedString.fromHtml(
+                    stringResource(
+                        R.string.preference_summary_engelsystem_json_export_url,
+                        stringResource(R.string.engelsystem_alias)
+                    )
+                )
+            } else {
+                // Truncate to keep the key private.
+                AnnotatedString("${engelsystemShiftsUrl.dropLast(23)}…")
+            },
+            style = EventFahrplanTheme.typography.bodyMedium,
         )
     }
 }
