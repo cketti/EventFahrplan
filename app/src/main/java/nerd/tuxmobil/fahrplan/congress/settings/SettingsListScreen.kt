@@ -1,6 +1,9 @@
 package nerd.tuxmobil.fahrplan.congress.settings
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -9,19 +12,31 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ripple.RippleAlpha
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.material3.RippleConfiguration
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import nerd.tuxmobil.fahrplan.congress.R
+import nerd.tuxmobil.fahrplan.congress.designsystem.indicators.ripple
 import nerd.tuxmobil.fahrplan.congress.designsystem.templates.Scaffold
 import nerd.tuxmobil.fahrplan.congress.designsystem.themes.EventFahrplanTheme
 
@@ -92,8 +107,7 @@ private fun CategoryGeneral(
             onCheckedChange = { sendEvent(SettingsEvent.DeviceTimezoneClicked) },
         )
 
-        // TODO: add icon for external action
-        ClickPreference(
+        ExternalClickPreference(
             title = stringResource(R.string.preference_title_app_notification_settings),
             subtitle = stringResource(R.string.preference_summary_app_notification_settings),
             onClick = { sendEvent(SettingsEvent.CustomizeNotificationsClicked) },
@@ -127,8 +141,7 @@ private fun CategoryAlarms(
     sendEvent: (SettingsEvent) -> Unit
 ) {
     Category(text = stringResource(R.string.reminders)) {
-        // TODO: external icon
-        ClickPreference(
+        ExternalClickPreference(
             title = stringResource(R.string.preference_title_alarm_tone),
             subtitle = stringResource(R.string.preference_summary_alarm_tone),
             onClick = { sendEvent(SettingsEvent.AlarmToneClicked) },
@@ -264,6 +277,40 @@ internal fun ClickPreference(
 }
 
 @Composable
+internal fun ExternalClickPreference(
+    title: String,
+    modifier: Modifier = Modifier,
+    subtitle: String? = null,
+    onClick: () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .minimumInteractiveComponentSize()
+            .clickable(onClick = onClick)
+            .padding(
+                horizontal = HORIZONTAL_PADDING_DP.dp,
+                vertical = PREFERENCE_VERTICAL_PADDING_DP.dp,
+            ),
+    ) {
+        PreferenceText(
+            title = title,
+            subtitle = subtitle,
+            modifier = Modifier.weight(1f)
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_open_external),
+            colorFilter = ColorFilter.tint(EventFahrplanTheme.colorScheme.onSurface),
+            contentDescription = null,
+            modifier = Modifier.padding(start = 16.dp),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 internal fun SwitchPreference(
     title: String,
     checked: Boolean,
@@ -290,7 +337,7 @@ internal fun SwitchPreference(
 
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = onCheckedChange,
         )
     }
 }
