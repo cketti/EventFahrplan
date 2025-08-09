@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -73,7 +75,11 @@ internal fun SettingsScreen(viewModel: SettingsViewModel) {
             activityClass = ScheduleStatisticActivity::class
         }
         dialog(route = SettingsNavigationDestination.AlternativeScheduleUrl.route) {
-            //FIXME
+            ScheduleUrlDialog(
+                currentValue = state.settings.alternativeScheduleUrl,
+                onValueChanged = { /*FIXME*/ },
+                onDismiss = { navController.popBackStack() }
+            )
         }
         dialog(route = SettingsNavigationDestination.AlarmTime.route) {
             AlarmTimeDialog(
