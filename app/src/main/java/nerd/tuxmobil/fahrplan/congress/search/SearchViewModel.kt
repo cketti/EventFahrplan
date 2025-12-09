@@ -6,8 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -23,7 +26,7 @@ import nerd.tuxmobil.fahrplan.congress.repositories.AppRepository
 import nerd.tuxmobil.fahrplan.congress.search.SearchEffect.NavigateBack
 import nerd.tuxmobil.fahrplan.congress.search.SearchEffect.NavigateToSession
 import nerd.tuxmobil.fahrplan.congress.search.SearchResultState.Loading
-import nerd.tuxmobil.fahrplan.congress.search.SearchResultState.Success
+import nerd.tuxmobil.fahrplan.congress.search.SearchResultState.SearchHistory
 import nerd.tuxmobil.fahrplan.congress.search.SearchViewEvent.OnBackIconClick
 import nerd.tuxmobil.fahrplan.congress.search.SearchViewEvent.OnBackPress
 import nerd.tuxmobil.fahrplan.congress.search.SearchViewEvent.OnSearchHistoryClear
@@ -32,6 +35,10 @@ import nerd.tuxmobil.fahrplan.congress.search.SearchViewEvent.OnSearchQueryChang
 import nerd.tuxmobil.fahrplan.congress.search.SearchViewEvent.OnSearchQueryClear
 import nerd.tuxmobil.fahrplan.congress.search.SearchViewEvent.OnSearchResultItemClick
 import nerd.tuxmobil.fahrplan.congress.search.SearchViewEvent.OnSearchSubScreenBackPress
+import nerd.tuxmobil.fahrplan.congress.search.filters.HasAlarmSearchFilter
+import nerd.tuxmobil.fahrplan.congress.search.filters.IsFavoriteSearchFilter
+import nerd.tuxmobil.fahrplan.congress.search.filters.NotRecordedSearchFilter
+import nerd.tuxmobil.fahrplan.congress.search.filters.WithinSpeakerNamesSearchFilter
 
 @OptIn(FlowPreview::class)
 class SearchViewModel(
@@ -43,36 +50,60 @@ class SearchViewModel(
 
     private companion object {
         const val FINISH_TYPING_SEARCH_QUERY_DELAY = 1_000L
+
+        private val SUPPORTED_SEARCH_FILTERS = listOf(
+            IsFavoriteSearchFilter(),
+            HasAlarmSearchFilter(),
+            NotRecordedSearchFilter(),
+            WithinSpeakerNamesSearchFilter(),
+        )
     }
 
     private val mutableEffects = Channel<SearchEffect>()
     val effects = mutableEffects.receiveAsFlow()
 
-    var searchQuery by mutableStateOf("")
-        private set
+    private var searchQuery by mutableStateOf("")
 
     private val useDeviceTimeZone: Boolean
         get() = repository.readUseDeviceTimeZoneEnabled()
 
-    val searchResultsState: StateFlow<SearchResultState> = snapshotFlow { searchQuery }
-        .combine(repository.sessions) { searchQuery, sessions ->
-            Success(
-                when (searchQuery.isEmpty()) {
-                    true -> emptyList()
-                    false -> searchResultParameterFactory.createSearchResults(
-                        searchQueryFilter.filterAll(sessions, searchQuery),
-                        useDeviceTimeZone,
-                    )
-                }
+    private val initialFilterState = SUPPORTED_SEARCH_FILTERS.associateWith { false }
+    private val searchFilters = MutableStateFlow(initialFilterState)
+    val uiState: StateFlow<SearchUiState> =
+        combine(
+            snapshotFlow { searchQuery },
+            searchFilters,
+            repository.sessions,
+            searchHistoryManager.searchHistory,
+        ) { query, filters, sessions, searchHistory ->
+            val resultState = if (query.isEmpty()) {
+                SearchHistory(searchHistory.toImmutableList())
+            } else {
+                val activeFilters = filters.filterValues { enabled -> enabled }.keys.toList() //FIXME: change SearchQueryFilter to use Set
+                val matchingSessions = searchQueryFilter.filterAll(sessions, query, activeFilters)
+                val searchResults = searchResultParameterFactory.createSearchResults(
+                    matchingSessions,
+                    useDeviceTimeZone,
+                )
+                SearchResultState.SearchResults(searchResults.toImmutableList())
+            }
+
+            SearchUiState(
+                queryState = SearchQueryState(query, filters.mapKeys { 1 /*FIXME*/ }.toImmutableMap()),
+                resultsState = resultState,
             )
         }
         .stateIn(
             scope = viewModelScope,
-            initialValue = Loading,
+            initialValue = SearchUiState(
+                queryState = SearchQueryState(
+                    query = "",
+                    filters = initialFilterState.mapKeys { 1 /* FIXME */ }.toImmutableMap(),
+                ),
+                resultsState = Loading,
+            ),
             started = WhileSubscribed(5_000)
         )
-
-    val searchHistory = searchHistoryManager.searchHistory
 
     init {
         snapshotFlow { searchQuery }
