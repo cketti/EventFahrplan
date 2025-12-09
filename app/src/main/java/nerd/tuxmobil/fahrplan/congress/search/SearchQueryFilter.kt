@@ -19,4 +19,10 @@ class SearchQueryFilter {
                 || it.speakers.any { name -> name.contains(query, ignoreCase = true) }
     }
 
+    fun filterAll(sessions: List<Session>, query: String, filters: List<SearchFilter>): List<Session> {
+        return filterAll(sessions, query)
+            .filter { session ->
+                filters.all { filter -> filter.isMatch(session, query) }
+            }
+    }
 }
